@@ -1,29 +1,30 @@
 name: Build and Deploy Go App
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+push:
+branches:
+- main
+workflow_dispatch:
 
 jobs:
-  deploy:
-    runs-on: self-hosted
+deploy:
+runs-on: self-hosted
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: /mnt/wsl/docker-desktop/cli-tools/usr/bin/docker build -t go-cicd:latest .
+  - name: Build Docker image
+    run: docker build -t go-cicd:latest .
 
-      - name: Stop previous container
-        run: /mnt/wsl/docker-desktop/cli-tools/usr/bin/docker rm -f go-cicd-app || true
+  - name: Stop previous container
+    run: docker rm -f go-cicd-app || true
 
-      - name: Start new container
-        run: /mnt/wsl/docker-desktop/cli-tools/usr/bin/docker run -d --name go-cicd-app --restart unless-stopped -p 8083:8888 go-cicd:latest
+  - name: Start new container
+    run: docker run -d --name go-cicd-app --restart unless-stopped -p 8083:8888 go-cicd:latest
 
-      - name: Check application
-        run: |
-          sleep 5
-          curl --fail http://localhost:8083
+  - name: Check application
+    run: |
+      sleep 5
+      curl --fail http://localhost:8083
+
